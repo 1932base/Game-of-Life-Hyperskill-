@@ -1,5 +1,6 @@
 package life;
 
+//Model: runs algorithms
 class Algorithm
 {
     private static int alive;
