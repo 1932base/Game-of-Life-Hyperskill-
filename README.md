@@ -1,1 +1,1 @@
-# Game-of-Life-Hyperskill-
+My implementation of the Game of Life project on Hyperskill. 
