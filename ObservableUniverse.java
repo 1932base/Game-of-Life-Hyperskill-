@@ -1,16 +1,19 @@
 package life;
 
 import java.io.IOException;
-import java.util.Random;
+import java.util.*;
 
-class ObservableUniverse implements Runnable
+//View: outputs display
+public class ObservableUniverse implements Runnable
 {
     private int generations = 1;
     private int alive;
     private char[][] universe;
-    static boolean pause;
+    private static boolean quit;
+    private static boolean reset;
+    private static int size;
 
-    ObservableUniverse(int size)
+    public ObservableUniverse(int size)
     {
         if (size <= 2)
         {
@@ -20,6 +23,10 @@ class ObservableUniverse implements Runnable
 
         universe = createUniverse(size);
     }
+
+    public static void setQuit(boolean quit) { ObservableUniverse.quit = quit; }
+    public static void setReset(boolean reset) { ObservableUniverse.reset = reset; }
+    public static void setSize(int size) { ObservableUniverse.size = size; }
 
     char[][] createUniverse(int size)
     {
@@ -46,27 +53,19 @@ class ObservableUniverse implements Runnable
     @Override
     public void run()
     {
-            while (alive > 0)
-            {
-                try
-                {
-                    universe = life.Algorithm.next(universe);
-                    alive = life.Algorithm.getAlive();
-                    print();
-                    Thread.sleep(1500);
-                    clearConsole();
-                    generations++;
-                }
-                catch (InterruptedException e)
-                {
-                    if (pause)
-                        return;
-                    try {
-                        Thread.sleep(Long.MAX_VALUE);
-                    } catch (InterruptedException i){ }
-                }
-            }
-
+        while (true)
+        {
+                universe = life.Algorithm.next(universe);
+                alive = life.Algorithm.getAlive();
+                print();
+                schleep(1000);
+                if (alive == 0)
+                    schleep(Long.MAX_VALUE);
+                if (quit)
+                    return;
+                clearConsole();
+                generations++;
+        }
 
     }
 
@@ -89,7 +88,41 @@ class ObservableUniverse implements Runnable
         System.out.println("Input q and press ENTER to quit");
     }
 
-    static void clearConsole()
+    private void reset(int size)
+    {
+        universe = createUniverse(size);
+        generations = 0;
+        reset = false;
+    }
+
+    private void schleep(long milliseconds)
+    {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e)
+        {
+            if (quit)
+               return;
+
+            if (reset) {
+                try{
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException i)
+                {
+                    reset(size);
+                }
+
+            } else {
+
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException i) { }
+
+            }
+        }
+    }
+
+    public static void clearConsole()
     {
         try {
             if (System.getProperty("os.name").contains("Windows"))
