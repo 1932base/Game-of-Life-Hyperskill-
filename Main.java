@@ -1,20 +1,19 @@
 package life;
 import java.util.*;
 
+//Controller: takes in user input
 public class Main
 {
     public static void main(String[] args)
     {
+        //game start
         Scanner keyboard = new Scanner(System.in);
-
-        //make this a method call for n
         System.out.print("Enter size of the universe: ");
         int size = keyboard.nextInt();
         keyboard.nextLine();
         life.ObservableUniverse.clearConsole();
 
         Thread universe = new Thread(new life.ObservableUniverse(size));
-
         universe.start();
 
         //continuous user input
@@ -28,11 +27,15 @@ public class Main
             }
             else if (input.equals("n"))
             {
-
+                universe.interrupt();
+                ObservableUniverse.setReset(true);
+                System.out.print("Enter size of universe: ");
+                ObservableUniverse.setSize(keyboard.nextInt());
+                universe.interrupt();
             }
             else if (input.equals("q")) //quit
             {
-                ObservableUniverse.pause = true;
+                ObservableUniverse.setQuit(true);
                 universe.interrupt();
                 break;
             }
